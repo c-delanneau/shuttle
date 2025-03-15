@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,7 @@
 		0ADB3B0F178EF8DB004E9BB9 /* StatusIconAlt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ADB3B0B178EF8DB004E9BB9 /* StatusIconAlt@2x.png */; };
 		0ADB3B13178F3DE4004E9BB9 /* LaunchAtLoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB3B12178F3DE4004E9BB9 /* LaunchAtLoginController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		24399FE6219CD0F700C8658F /* virtual-with-screen.scpt in Resources */ = {isa = PBXBuildFile; fileRef = 24399FE5219CD0F700C8658F /* virtual-with-screen.scpt */; };
+		5C17BDD22D8524F800535AF8 /* TerminalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C17BDD12D8524F800535AF8 /* TerminalManager.m */; };
 		6FC541A31D45CF7F00A896E3 /* AboutWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FC541A51D45CF7F00A896E3 /* AboutWindowController.xib */; };
 		7E74A7C61789CE2F0079E0D2 /* shuttle.default.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E74A7C51789CE2F0079E0D2 /* shuttle.default.json */; };
 		A124BA191D45572B00218F2F /* iTerm2-stable-current-window.scpt in Resources */ = {isa = PBXBuildFile; fileRef = A124BA161D45572B00218F2F /* iTerm2-stable-current-window.scpt */; };
@@ -43,6 +44,8 @@
 		0ADB3B11178F3DE4004E9BB9 /* LaunchAtLoginController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchAtLoginController.h; sourceTree = "<group>"; };
 		0ADB3B12178F3DE4004E9BB9 /* LaunchAtLoginController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchAtLoginController.m; sourceTree = "<group>"; };
 		24399FE5219CD0F700C8658F /* virtual-with-screen.scpt */ = {isa = PBXFileReference; lastKnownFileType = file; path = "virtual-with-screen.scpt"; sourceTree = "<group>"; };
+		5C17BDD02D8524F800535AF8 /* TerminalManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TerminalManager.h; sourceTree = "<group>"; };
+		5C17BDD12D8524F800535AF8 /* TerminalManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TerminalManager.m; sourceTree = "<group>"; };
 		7E72D21E178003ED00A6389C /* Shuttle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Shuttle.entitlements; sourceTree = "<group>"; };
 		7E74A7C51789CE2F0079E0D2 /* shuttle.default.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = shuttle.default.json; sourceTree = "<group>"; };
 		A124BA161D45572B00218F2F /* iTerm2-stable-current-window.scpt */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTerm2-stable-current-window.scpt"; sourceTree = "<group>"; };
@@ -169,6 +172,8 @@
 		C149EC0315D5214600B1F558 /* Shuttle */ = {
 			isa = PBXGroup;
 			children = (
+				5C17BDD02D8524F800535AF8 /* TerminalManager.h */,
+				5C17BDD12D8524F800535AF8 /* TerminalManager.m */,
 				A12D9BE61BCF2C72004F52A6 /* apple-scpt */,
 				7E74A7C51789CE2F0079E0D2 /* shuttle.default.json */,
 				7E72D21E178003ED00A6389C /* Shuttle.entitlements */,
@@ -210,6 +215,7 @@
 				C149EBF515D5214600B1F558 /* Sources */,
 				C149EBF615D5214600B1F558 /* Frameworks */,
 				C149EBF715D5214600B1F558 /* Resources */,
+				5CA08BDA2D851C1700BCE63D /* Compile AppleScripts */,
 			);
 			buildRules = (
 			);
@@ -226,7 +232,8 @@
 		C149EBF015D5214600B1F558 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = fitztrev;
 			};
 			buildConfigurationList = C149EBF315D5214600B1F558 /* Build configuration list for PBXProject "Shuttle" */;
@@ -234,6 +241,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				"zh-Hans",
 				Base,
@@ -281,6 +289,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		5CA08BDA2D851C1700BCE63D /* Compile AppleScripts */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile AppleScripts";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# 创建目标目录\nmkdir -p \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/apple-scpt\"\n\n# 将 .applescript 文件编译为 .scpt 文件\nfor f in \"$PROJECT_DIR/Shuttle/apple-scpt-text/\"*.applescript; do\n    if [ -f \"$f\" ]; then\n        filename=$(basename \"$f\" .applescript)\n        echo \"编译: $f -> $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/apple-scpt/${filename}.scpt\"\n        osacompile -o \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/Resources/apple-scpt/${filename}.scpt\" \"$f\"\n    fi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		C149EBF515D5214600B1F558 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -288,6 +317,7 @@
 			files = (
 				0ADB3B13178F3DE4004E9BB9 /* LaunchAtLoginController.m in Sources */,
 				A1D700071A5DCE8D003563E4 /* AboutWindowController.m in Sources */,
+				5C17BDD22D8524F800535AF8 /* TerminalManager.m in Sources */,
 				C149EC0A15D5214600B1F558 /* main.m in Sources */,
 				C149EC1115D5214600B1F558 /* AppDelegate.m in Sources */,
 			);
@@ -374,14 +404,17 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -398,7 +431,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -423,14 +456,17 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -440,7 +476,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -449,14 +485,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Shuttle/Shuttle.entitlements;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Shuttle/Shuttle-Prefix.pch";
 				INFOPLIST_FILE = "Shuttle/Shuttle-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "shuttle.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -465,14 +506,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Shuttle/Shuttle.entitlements;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Shuttle/Shuttle-Prefix.pch";
 				INFOPLIST_FILE = "Shuttle/Shuttle-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "shuttle.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

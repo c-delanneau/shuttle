@@ -5,6 +5,7 @@
 
 #import "AppDelegate.h"
 #import "AboutWindowController.h"
+#import "TerminalManager.h"
 
 @implementation AppDelegate
 
@@ -470,7 +471,6 @@
     NSString *errorMessage;
     NSString *errorInfo;
     
-    
     //Place the comma delimited string of menu item settings into an array
     NSArray *objectsFromJSON = [[sender representedObject] componentsSeparatedByString:(@"¬_¬")];
     
@@ -532,121 +532,45 @@
         }
     }
     
-    //Set Paths to iTerm Stable AppleScripts
-    NSString *iTermStableNewWindow =  [[NSBundle mainBundle] pathForResource:@"iTerm2-stable-new-window" ofType:@"scpt"];
-    NSString *iTermStableCurrentWindow = [[NSBundle mainBundle] pathForResource:@"iTerm2-stable-current-window" ofType:@"scpt"];
-    NSString *iTermStableNewTabDefault = [[NSBundle mainBundle] pathForResource:@"iTerm2-stable-new-tab-default" ofType:@"scpt"];
-    
-    //Set Paths to iTerm Nightly AppleScripts
-    NSString *iTerm2NightlyNewWindow =  [[NSBundle mainBundle] pathForResource:@"iTerm2-nightly-new-window" ofType:@"scpt"];
-    NSString *iTerm2NightlyCurrentWindow = [[NSBundle mainBundle] pathForResource:@"iTerm2-nightly-current-window" ofType:@"scpt"];
-    NSString *iTerm2NightlyNewTabDefault = [[NSBundle mainBundle] pathForResource:@"iTerm2-nightly-new-tab-default" ofType:@"scpt"];
-    
-    //Set Paths to terminalScripts
-    NSString *terminalNewWindow =  [[NSBundle mainBundle] pathForResource:@"terminal-new-window" ofType:@"scpt"];
-    NSString *terminalCurrentWindow = [[NSBundle mainBundle] pathForResource:@"terminal-current-window" ofType:@"scpt"];
-    NSString *terminalNewTabDefault = [[NSBundle mainBundle] pathForResource:@"terminal-new-tab-default" ofType:@"scpt"];
-    
-    //Set Path to virtual with screen AppleScripts
-    NSString *terminalVirtualWithScreen = [[NSBundle mainBundle] pathForResource:@"virtual-with-screen" ofType:@"scpt"];
-    
-    //Set the name of the handler that we are passing parameters too in the apple script
-    NSString *handlerName = @"scriptRun";
-    
-    //script expects the following order: Command, Theme, Title unless its virtual which bypasses the url check and expects Command, Title
-    NSArray *passParameters;
-    NSURL *url;
-    if ( ![terminalWindow isEqualToString:@"virtual"] ) {
-        passParameters = @[escapedObject, terminalTheme, terminalTitle];
-        url = [NSURL URLWithString:escapedObject];
+    // 先检查是否是 URL
+    NSURL *url = [NSURL URLWithString:escapedObject];
+    if (url && [url scheme]) {
+        [[NSWorkspace sharedWorkspace] openURL:url];
+        return;
     }
-    else {
-        passParameters = @[escapedObject, terminalTitle];
-    }
-    // Check if Url
-    if (url)
-        {
-            [[NSWorkspace sharedWorkspace] openURL:url];
-            
-        }
-    //If the JSON file is set to use iTerm
-    else if ( [terminalPref rangeOfString: @"iterm"].location !=NSNotFound ) {
-        
-        //If the JSON prefs for iTermVersion are not stable or nightly throw an error
-        if( ![iTermVersionPref isEqualToString: @"stable"] && ![iTermVersionPref isEqualToString:@"nightly"] ) {
-            
-            if( iTermVersionPref == 0 ) {
-                errorMessage = NSLocalizedString(@"\"iTerm_version\": \"VALUE\", is missing.\n\n\"VALUE\" can be:\n\"stable\" targeting new versions.\n\"nightly\" targeting nightly builds.\n\nPlease fix your shuttle JSON settings.\nSee readme.md on shuttle's github for help.",nil);
-                errorInfo = NSLocalizedString(@"Press Continue to try iTerm stable applescripts.\n              -->(not recommended)<--\nThis could fail if you have another version of iTerm installed.\n\nPlease fix the JSON settings.\nPress Quit to exit shuttle.",nil);
-                [self throwError:errorMessage additionalInfo:errorInfo continueOnErrorOption:YES];
-                iTermVersionPref = @"stable";
-                
-            }else{
-                errorMessage = [NSString stringWithFormat:@"%@%@%@ %@",@"'",iTermVersionPref,@"'", NSLocalizedString(@"is not a valid value for iTerm_version. Please fix this in the JSON file",nil)];
-                errorInfo = NSLocalizedString(@"bad \"iTerm_version\": \"VALUE\" in the JSON settings",nil);
-                [self throwError:errorMessage additionalInfo:errorInfo continueOnErrorOption:NO];
-            }
-        }
-        
-        if( [iTermVersionPref isEqualToString:@"stable"]) {
-            
-            //run the applescript that works with iTerm Stable
-            //if we are running in a new iTerm "Stable" Window
-            if ( [terminalWindow isEqualToString:@"new"] ) {
-                [self runScript:iTermStableNewWindow handler:handlerName parameters:passParameters];
-            }
-            //if we are running in the current iTerm "Stable" Window
-            if ( [terminalWindow isEqualToString:@"current"] ) {
-                [self runScript:iTermStableCurrentWindow handler:handlerName parameters:passParameters];
-            }
-            //we are using the default action of shuttle... The active window in a new tab
-            if ( [terminalWindow isEqualToString:@"tab"] ) {
-                [self runScript:iTermStableNewTabDefault handler:handlerName parameters:passParameters];
-            }
-            //don't spawn a terminal run the command in the background using screen
-            if ( [terminalWindow isEqualToString:@"virtual"] ) {
-                [self runScript:terminalVirtualWithScreen handler:handlerName parameters:passParameters];
-            }
-        }
-        //iTermVersion is not set to "stable" using applescripts Configured for Nightly
-        if( [iTermVersionPref isEqualToString:@"nightly"]) {
-            //if we are running in a new iTerm "Nightly" Window
-            if ( [terminalWindow isEqualToString:@"new"] ) {
-                [self runScript:iTerm2NightlyNewWindow handler:handlerName parameters:passParameters];
-            }
-            //if we are running in the current iTerm "Nightly" Window
-            if ( [terminalWindow isEqualToString:@"current"] ) {
-                [self runScript:iTerm2NightlyCurrentWindow handler:handlerName parameters:passParameters];
-            }
-            //we are using the default action of shuttle... The active window in a new tab
-            if ( [terminalWindow isEqualToString:@"tab"] ) {
-                [self runScript:iTerm2NightlyNewTabDefault handler:handlerName parameters:passParameters];
-            }
-            //don't spawn a terminal run the command in the background using screen
-            if ( [terminalWindow isEqualToString:@"virtual"] ) {
-                [self runScript:terminalVirtualWithScreen handler:handlerName parameters:passParameters];
-            }
+
+    // 确定终端类型
+    TerminalType termType = TerminalTypeDefault;
+    if ([terminalPref rangeOfString:@"iterm"].location != NSNotFound) {
+        if ([iTermVersionPref isEqualToString:@"nightly"]) {
+            termType = TerminalTypeITermNightly;
+        } else {
+            termType = TerminalTypeITerm;
         }
     }
-    //If JSON settings are set to use Terminal.app
-    else {
-        //if we are running in a new terminal Window
-        if ( [terminalWindow isEqualToString:@"new"] ) {
-            [self runScript:terminalNewWindow handler:handlerName parameters:passParameters];
-        }
-        //if we are running in the current terminal Window
-        if ( [terminalWindow isEqualToString:@"current"] ) {
-            [self runScript:terminalCurrentWindow handler:handlerName parameters:passParameters];
-        }
-        //we are using the default action of shuttle... The active window in a new tab
-        if ( [terminalWindow isEqualToString:@"tab"] ) {
-            [self runScript:terminalNewTabDefault handler:handlerName parameters:passParameters];
-        }
-        //don't spawn a terminal run the command in the background using screen
-        if ( [terminalWindow isEqualToString:@"virtual"] ) {
-            [self runScript:terminalVirtualWithScreen handler:handlerName parameters:passParameters];
-        }
+
+    // 确定窗口模式
+    WindowMode winMode = WindowModeTab; // 默认为标签页模式
+    if ([terminalWindow isEqualToString:@"new"]) {
+        winMode = WindowModeNew;
+    } else if ([terminalWindow isEqualToString:@"current"]) {
+        winMode = WindowModeCurrent;
+    } else if ([terminalWindow isEqualToString:@"virtual"]) {
+        winMode = WindowModeVirtual;
     }
+
+    // 使用 TerminalManager 执行命令
+    //[[TerminalManager sharedManager] executeCommand:escapedObject 
+    //                                  terminalType:termType 
+    //                                  windowMode:winMode 
+    //                                       theme:terminalTheme 
+    //                                       title:terminalTitle];
+
+    [[TerminalManager sharedManager] executeCommandDirectly:escapedObject 
+                                         terminalType:termType 
+                                           windowMode:winMode 
+                                                theme:terminalTheme 
+                                                title:terminalTitle];
 }
 
 - (void) runScript:(NSString *)scriptPath handler:(NSString*)handlerName parameters:(NSArray*)parametersInArray {

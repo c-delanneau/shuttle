@@ -5,6 +5,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "LaunchAtLoginController.h"
+#import "TerminalManager.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSMenuDelegate>{
     IBOutlet NSMenu *menu;
